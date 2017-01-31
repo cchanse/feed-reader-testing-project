@@ -63,8 +63,9 @@ $(function() {
          * the CSS to determine how we're performing the
          * hiding/showing of the menu element.
          */
+         var menuHidden = $('body').hasClass("menu-hidden");
+
          it('menu is hidden by default', function() {
-            var menuHidden = $('body').hasClass("menu-hidden");
             expect(menuHidden).toBe(true);
          });
 
@@ -76,9 +77,16 @@ $(function() {
           */
           //
           it('menu is displayed on clicked', function() {
-              $('.menu-icon-link').click(function() {
-                  expect(menuHidden).toBe(false); // Passes
-              });
+            // when menu first clicked, menu should be seen
+            $('.menu-icon-link').click();
+            menuHidden = $('body').hasClass("menu-hidden");
+            expect(menuHidden).toBe(false);
+
+            // when menu clicked again, menu should be hidden
+            $('.menu-icon-link').click();
+            menuHidden = $('body').hasClass("menu-hidden");
+            expect(menuHidden).toBe(true);
+
           });
     });
 
@@ -94,16 +102,14 @@ $(function() {
          */
 
          // Ensure feeds are loaded before being tested
-         beforeEach(function(done) {
-            loadFeed(0, function() {
-                done();
-            });
+        beforeEach(function(done) {
+            loadFeed(0, done);
         });
 
-         it('at least one entry should be present', function() {
-             var entry = $('.feed article').hasClass("entry");
+        it('at least one entry should be present', function() {
+            var entry = $('.feed article').hasClass("entry");
             expect(entry).toBe(true);
-         });
+        });
      });
 
 
@@ -118,13 +124,12 @@ $(function() {
             //load first feed
            loadFeed(0, function() {
                initialFeed = $('.feed h2').text(); // grab the title of each feed item
-               done(); //spec will not start until the done function is called
+               //load second feed
+               loadFeed(1, function() {
+                  secondFeed = $('.feed h2').text();
+                  done();
+              });
            });
-           //load second feed
-           loadFeed(1, function() {
-              secondFeed = $('.feed h2').text();
-              done();
-          });
        });
         /* Test that ensures when a new feed is loaded
          * by the loadFeed function that the content actually changes.
